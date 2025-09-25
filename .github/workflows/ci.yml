@@ -1,0 +1,53 @@
+name: CI - CRUD PHP + JS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: proyecto_n_tecnologias
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      # 1. Descargar el código del repo
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      # 2. Instalar PHP
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      # 3. Verificar versión PHP
+      - name: Verificar PHP
+        run: php -v
+
+      # 4. Validar archivos PHP (sintaxis)
+      - name: Validar sintaxis PHP
+        run: |
+          find . -type f -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      # 5. (Opcional) Instalar dependencias con Composer si usas
+      # - name: Instalar dependencias
+      #   run: composer install
+
+      # 6. (Opcional) Ejecutar pruebas unitarias
+      - name: Ejecutar pruebas
+        run: echo "Aquí correrían pruebas automáticas con PHPUnit o similares"
